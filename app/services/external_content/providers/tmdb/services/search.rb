@@ -15,11 +15,29 @@ module ExternalContent
           def call(query:, page:, language:, include_adult:)
             response = @client.call("search/multi", query:, page:, language:, include_adult:)
             grouped = Array(response["results"]).group_by { |item| item["media_type"] }
+            titles = (Array(grouped["tv"]) + Array(grouped["movie"])).select { |item| korean_title?(item) }
+            people = Array(grouped["person"]).filter_map { |person| korean_person(person) }
             {
-              titles: @title_collection.call(Array(grouped["tv"]) + Array(grouped["movie"])),
-              people: Array(grouped["person"]).map { |person| @person_summary.call(person) },
+              titles: @title_collection.call(titles),
+              people: people.map { |person| @person_summary.call(person) },
               pagination: @pagination.call(response)
             }
+          end
+
+          private
+
+          def korean_title?(item)
+            item["original_language"] == "ko" || origin_countries(item).include?("KR")
+          end
+
+          def korean_person(person)
+            known_for = Array(person["known_for"]).select { |title| korean_title?(title) }
+            person.merge("known_for" => known_for) if known_for.any?
+          end
+
+          def origin_countries(item)
+            Array(item["origin_country"] || item["origin_countries"]) |
+              Array(item["production_countries"]).filter_map { |country| country["iso_3166_1"] }
           end
         end
       end
