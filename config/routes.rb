@@ -9,6 +9,15 @@ Rails.application.routes.draw do
       get "search", to: "search#show"
       get "people/:id", to: "people#show"
       get "configuration", to: "configuration#show"
+      get "library", to: "library#index"
+      get "guest", to: "guests#show"
+      get "recent_views", to: "recent_views#index"
+      put "recent_views/:media_type/:id", to: "recent_views#update"
+      put "library/:media_type/:id", to: "library#update"
+      delete "library/:media_type/:id", to: "library#destroy"
+      get "titles/:media_type/:id/comments", to: "comments#index"
+      post "titles/:media_type/:id/comments", to: "comments#create"
+      put "comments/:id/like", to: "comments#like"
     end
   end
 

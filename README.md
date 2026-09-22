@@ -74,4 +74,20 @@ TMDB-реализация собрана в одном composition root. Каж�
 - `GET /api/v1/people/:id`
 - `GET /api/v1/configuration`
 
+### Гостевые действия
+
+Приложение один раз создаёт случайный UUID и сохраняет его в данных установки. Все запросы ниже отправляют этот UUID в заголовке `X-Device-Id`. При первом запросе сервер создаёт временного гостя. Регистрация не нужна; после очистки данных приложения прежний UUID и доступ к гостевым данным теряются.
+
+- `GET /api/v1/guest` — создать или получить гостя.
+- `GET /api/v1/library` — записи библиотеки текущего гостя.
+- `PUT /api/v1/library/:media_type/:id` — сохранить статус, оценку, избранное и заметку. JSON: `{"status":"WATCHING","user_rating":8,"favorite":true,"personal_note":"..."}`. Допустимые статусы: `WANT_TO_WATCH`, `WATCHING`, `ON_HOLD`, `DROPPED`, `COMPLETED`.
+- `DELETE /api/v1/library/:media_type/:id` — удалить запись.
+- `GET /api/v1/recent_views` — 10 последних открытых тайтлов.
+- `PUT /api/v1/recent_views/:media_type/:id` — отметить открытие тайтла.
+- `GET /api/v1/titles/:media_type/:id/comments` — комментарии с вложенными ответами, числом лайков и `is_liked` для гостя.
+- `POST /api/v1/titles/:media_type/:id/comments` — создать комментарий. JSON: `{"text":"..."}`; для ответа добавить `"parent_id":123`.
+- `PUT /api/v1/comments/:id/like` — поставить или убрать лайк. JSON: `{"liked":true}` или `{"liked":false}`.
+
+`media_type` — `tv` или `movie`, `id` — положительный числовой ID из каталога.
+
 Все ошибки имеют форму `{ "error": { "code": "...", "message": "...", "details": {} } }`. Ошибочные параметры возвращают `422`, отсутствующие сущности — `404`, а сбой внешнего провайдера — `502` или `503`.
