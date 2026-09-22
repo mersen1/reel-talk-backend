@@ -30,6 +30,10 @@ services:
       DB_USERNAME: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       DB_NAME: ${POSTGRES_DB:-reel_talk_backend_development}
+      CONTENT_PROVIDER: ${CONTENT_PROVIDER:-tmdb}
+      TMDB_ACCESS_TOKEN: ${TMDB_ACCESS_TOKEN:-}
+      TMDB_API_KEY: ${TMDB_API_KEY:-}
+      TMDB_DEFAULT_REGION: ${TMDB_DEFAULT_REGION:-RU}
     volumes:
       - .:/rails
       - bundle_data:/usr/local/bundle
