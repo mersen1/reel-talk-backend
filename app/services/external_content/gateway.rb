@@ -6,7 +6,7 @@ module ExternalContent
   class Gateway
     extend Forwardable
 
-    OPERATIONS = %i[home titles search title person configuration].freeze
+    OPERATIONS = %i[home titles search title season person configuration].freeze
     def_delegators :@provider, *OPERATIONS
 
     class << self

@@ -8,7 +8,7 @@ module ExternalContent
           @operations = operations
         end
 
-        %i[home titles search title person configuration].each do |operation|
+        %i[home titles search title season person configuration].each do |operation|
           define_method(operation) do |**params|
             @operations.fetch(operation).call(**params)
           end

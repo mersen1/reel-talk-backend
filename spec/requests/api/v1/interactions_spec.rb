@@ -52,6 +52,42 @@ RSpec.describe "Guest interactions" do
     expect(response.parsed_body.fetch("likes")).to eq(0)
   end
 
+  it "saves watched episodes separately for each guest" do
+    put "/api/v1/library/tv/123", headers: headers(alice), params: {
+      watched_episodes: ["1:1", "1:3", "2:1"]
+    }, as: :json
+    expect(response).to have_http_status(:ok), response.body
+
+    get "/api/v1/library", headers: headers(alice)
+    expect(response.parsed_body.fetch("entries").first.fetch("watched_episodes")).to eq(["1:1", "1:3", "2:1"])
+    get "/api/v1/library", headers: headers(bob)
+    expect(response.parsed_body.fetch("entries")).to be_empty
+  end
+
+  it "keeps episode ratings and discussions separate by episode" do
+    put "/api/v1/library/tv/123", headers: headers(alice), params: {
+      episode_ratings: { "1:1" => 9, "1:2" => 7 }
+    }, as: :json
+    expect(response).to have_http_status(:ok), response.body
+    get "/api/v1/library", headers: headers(alice)
+    expect(response.parsed_body.fetch("entries").first.fetch("episode_ratings")).to eq("1:1" => 9, "1:2" => 7)
+
+    post "/api/v1/titles/tv/123/seasons/1/episodes/1/comments", headers: headers(alice), params: { text: "Episode one" }, as: :json
+    expect(response).to have_http_status(:created), response.body
+    episode_one_id = response.parsed_body.fetch("id")
+    post "/api/v1/titles/tv/123/seasons/1/episodes/2/comments", headers: headers(bob), params: { text: "Episode two" }, as: :json
+    expect(response).to have_http_status(:created), response.body
+
+    get "/api/v1/titles/tv/123/seasons/1/episodes/1/comments", headers: headers(alice)
+    expect(response.parsed_body.fetch("comments").map { |comment| comment.fetch("text") }).to eq(["Episode one"])
+    get "/api/v1/titles/tv/123/comments", headers: headers(alice)
+    expect(response.parsed_body.fetch("comments")).to be_empty
+
+    post "/api/v1/titles/tv/123/seasons/1/episodes/2/comments", headers: headers(bob),
+      params: { text: "Wrong reply", parent_id: episode_one_id }, as: :json
+    expect(response).to have_http_status(:unprocessable_content)
+  end
+
   it "rejects replies to comments on another title" do
     post "/api/v1/titles/tv/123/comments", headers: headers(alice), params: { text: "Hello" }, as: :json
     root_id = response.parsed_body.fetch("id")

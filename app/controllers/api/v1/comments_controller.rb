@@ -7,8 +7,11 @@ module Api
         owner = device_id
         key = title_key
         return unless owner && key
+        episode = episode_key
+        return if performed?
 
-        comments = Comment.where(media_type: key[0], title_id: key[1]).includes(:comment_likes).order(:created_at).to_a
+        comments = Comment.where(media_type: key[0], title_id: key[1], season_number: episode&.first,
+          episode_number: episode&.last).includes(:comment_likes).order(:created_at).to_a
         by_parent = comments.group_by(&:parent_id)
         by_id = comments.index_by(&:id)
         render json: { comments: (by_parent[nil] || []).reverse.map { |comment| serialize(comment, by_parent, owner, by_id) } }
@@ -18,9 +21,12 @@ module Api
         owner = device_id
         key = title_key
         return unless owner && key
+        episode = episode_key
+        return if performed?
 
         guest = GuestUser.find_by!(device_id: owner)
         comment = Comment.new(device_id: owner, media_type: key[0], title_id: key[1],
+          season_number: episode&.first, episode_number: episode&.last,
           user_name: guest.display_name, body: params[:text], parent_id: params[:parent_id])
         comment.save ? render(json: serialize(comment, {}, owner, {}), status: :created) : invalid_record(comment)
       end
@@ -42,6 +48,17 @@ module Api
       end
 
       private
+
+      def episode_key
+        return nil unless params.key?(:season_number) || params.key?(:episode_number)
+
+        season = params[:season_number].to_s
+        episode = params[:episode_number].to_s
+        return [season.to_i, episode.to_i] if season.match?(/\A[1-9]\d*\z/) && episode.match?(/\A[1-9]\d*\z/)
+
+        render_error("invalid_episode", "Invalid episode identifier", :unprocessable_content)
+        nil
+      end
 
       def serialize(comment, by_parent, owner, by_id)
         { id: comment.id, user_name: comment.user_name, text: comment.body,

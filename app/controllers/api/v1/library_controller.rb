@@ -16,7 +16,7 @@ module Api
         return unless owner && key
 
         entry = LibraryEntry.find_or_initialize_by(device_id: owner, media_type: key[0], title_id: key[1])
-        values = params.permit(:status, :user_rating, :favorite, :personal_note).to_h
+        values = params.permit(:status, :user_rating, :favorite, :personal_note, watched_episodes: [], episode_ratings: {}).to_h
         entry.assign_attributes(values)
         entry.save ? render(json: serialize(entry)) : invalid_record(entry)
       end
@@ -35,6 +35,8 @@ module Api
       def serialize(entry)
         { media_type: entry.media_type, title_id: entry.title_id, status: entry.status,
           user_rating: entry.user_rating, favorite: entry.favorite, personal_note: entry.personal_note,
+          watched_episodes: entry.watched_episodes,
+          episode_ratings: entry.episode_ratings,
           updated_at: entry.updated_at.iso8601 }
       end
     end

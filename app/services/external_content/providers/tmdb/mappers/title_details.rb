@@ -20,6 +20,10 @@ module ExternalContent
               runtime_minutes: runtime(item, media_type),
               number_of_seasons: item["number_of_seasons"],
               number_of_episodes: item["number_of_episodes"],
+              season_numbers: Array(item["seasons"]).filter_map do |season|
+                number = season["season_number"]
+                number if number.is_a?(Integer) && number.positive?
+              end,
               countries: countries(item, media_type),
               genres: genres(item),
               cast: cast(item),

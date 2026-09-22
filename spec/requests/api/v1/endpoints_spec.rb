@@ -70,6 +70,24 @@ RSpec.describe "API v1" do
     )
   end
 
+  it "loads episodes for a season" do
+    allow(provider).to receive(:season).and_return(season_number: 1, episodes: [{ number: 1, name: "Pilot" }])
+    Comment.create!(device_id: "11111111-1111-4111-8111-111111111111", user_name: "Гость",
+      media_type: "tv", title_id: 209867, season_number: 1, episode_number: 1, body: "Great")
+    LibraryEntry.create!(device_id: "11111111-1111-4111-8111-111111111111", media_type: "tv", title_id: 209867,
+      episode_ratings: { "1:1" => 8, "2:1" => 5 })
+    LibraryEntry.create!(device_id: "22222222-2222-4222-8222-222222222222", media_type: "tv", title_id: 209867,
+      episode_ratings: { "1:1" => 9 })
+
+    get "/api/v1/titles/tv/209867/seasons/1"
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.fetch("episodes").first).to include(
+      "number" => 1, "name" => "Pilot", "comment_count" => 1, "rating_sum" => 17, "rating_count" => 2
+    )
+    expect(provider).to have_received(:season).with(id: 209867, season_number: 1, language: "ru-RU")
+  end
+
   it "loads a person" do
     allow(provider).to receive(:person).and_return(id: 1)
 

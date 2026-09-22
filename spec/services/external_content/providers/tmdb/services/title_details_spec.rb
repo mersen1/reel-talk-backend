@@ -24,6 +24,7 @@ RSpec.describe ExternalContent::Providers::Tmdb::Services::TitleDetails do
       "name" => "Название",
       "original_name" => "원제",
       "first_air_date" => "2024-04-08",
+      "seasons" => [{ "season_number" => 0 }, { "season_number" => 1 }, { "season_number" => 2 }],
       "genres" => [],
       "credits" => { "cast" => [] },
       "videos" => { "results" => [{
@@ -42,5 +43,6 @@ RSpec.describe ExternalContent::Providers::Tmdb::Services::TitleDetails do
     )
     expect(result.dig(:trailer, :url)).to eq("https://www.youtube.com/watch?v=abc")
     expect(result[:watch_providers_url]).to eq("https://example.test/watch")
+    expect(result[:season_numbers]).to eq([1, 2])
   end
 end

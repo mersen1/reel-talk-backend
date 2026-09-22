@@ -54,6 +54,7 @@ module ExternalContent
               pagination: Services::Pagination.new
             ),
             title: Services::TitleDetails.new(client: @client, mapper: mappers[:title_details]),
+            season: Services::SeasonDetails.new(client: @client),
             person: Services::PersonDetails.new(client: @client, mapper: mappers[:person]),
             configuration: Services::Configuration.new(
               client: @client,

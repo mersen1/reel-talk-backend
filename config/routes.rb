@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       get "home", to: "home#show"
       get "titles", to: "titles#index"
       get "titles/:media_type/:id", to: "titles#show"
+      get "titles/tv/:id/seasons/:season_number", to: "titles#season"
       get "search", to: "search#show"
       get "people/:id", to: "people#show"
       get "configuration", to: "configuration#show"
@@ -17,6 +18,8 @@ Rails.application.routes.draw do
       delete "library/:media_type/:id", to: "library#destroy"
       get "titles/:media_type/:id/comments", to: "comments#index"
       post "titles/:media_type/:id/comments", to: "comments#create"
+      get "titles/tv/:id/seasons/:season_number/episodes/:episode_number/comments", to: "comments#index", defaults: { media_type: "tv" }
+      post "titles/tv/:id/seasons/:season_number/episodes/:episode_number/comments", to: "comments#create", defaults: { media_type: "tv" }
       put "comments/:id/like", to: "comments#like"
     end
   end
