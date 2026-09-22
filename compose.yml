@@ -1,0 +1,46 @@
+name: reel-talk-backend
+
+services:
+  db:
+    image: postgres:18.6
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-reel_talk_backend_development}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-reel_talk_backend_development}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        RUBY_VERSION: 4.0.7
+    command: ./bin/rails server -b 0.0.0.0
+    environment:
+      RAILS_ENV: development
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_NAME: ${POSTGRES_DB:-reel_talk_backend_development}
+    volumes:
+      - .:/rails
+      - bundle_data:/usr/local/bundle
+    ports:
+      - "${RAILS_PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+volumes:
+  bundle_data:
+  postgres_data:

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+bundle check || bundle install
+
+rm -f /rails/tmp/pids/server.pid
+./bin/rails db:prepare
+
+exec "$@"
