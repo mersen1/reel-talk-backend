@@ -8,7 +8,7 @@ module ExternalContent
       class Connection
         BASE_URL = "https://api.themoviedb.org/3/"
 
-        def initialize(access_token: ENV["TMDB_ACCESS_TOKEN"], api_key: ENV["TMDB_API_KEY"])
+        def initialize(access_token:, api_key:)
           @access_token = access_token.presence
           @api_key = api_key.presence
         end

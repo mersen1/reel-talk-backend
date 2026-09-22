@@ -5,7 +5,7 @@ module ExternalContent
     module Tmdb
       class CompositionRoot
         def initialize(client: nil)
-          @client = client || Client.new(connection: Connection.new.call)
+          @client = client || build_client
         end
 
         def call
@@ -13,6 +13,11 @@ module ExternalContent
         end
 
         private
+
+        def build_client
+          configuration = Credentials.new.call
+          Client.new(connection: Connection.new(**configuration).call)
+        end
 
         def build_mappers
           image_url = Mappers::ImageUrl.new
