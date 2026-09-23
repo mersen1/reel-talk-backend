@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class GuestUser < ApplicationRecord
   after_create { update_column(:display_name, "Гость #{id}") }
   validates :device_id, presence: true, uniqueness: true

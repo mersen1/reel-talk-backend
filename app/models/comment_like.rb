@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommentLike < ApplicationRecord
   belongs_to :comment
   validates :device_id, presence: true

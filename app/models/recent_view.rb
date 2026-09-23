@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RecentView < ApplicationRecord
   validates :device_id, presence: true
   validates :media_type, inclusion: { in: %w[tv movie] }

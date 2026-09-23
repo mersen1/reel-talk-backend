@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUserInteractions < ActiveRecord::Migration[8.1]
   def change
     create_table :guest_users do |t|

@@ -34,7 +34,6 @@ module ExternalContent
             known_for = Array(person["known_for"]).select { |title| korean_series?(title) }
             person.merge("known_for" => known_for) if known_for.any?
           end
-
         end
       end
     end
