@@ -15,7 +15,7 @@ module ExternalContent
           def call(query:, page:, language:, include_adult:)
             response = @client.call("search/multi", query:, page:, language:, include_adult:)
             grouped = Array(response["results"]).group_by { |item| item["media_type"] }
-            titles = (Array(grouped["tv"]) + Array(grouped["movie"])).select { |item| korean_title?(item) }
+            titles = Array(grouped["tv"]).select { |item| korean_series?(item) }
             people = Array(grouped["person"]).filter_map { |person| korean_person(person) }
             {
               titles: @title_collection.call(titles),
@@ -26,19 +26,15 @@ module ExternalContent
 
           private
 
-          def korean_title?(item)
-            item["original_language"] == "ko" || origin_countries(item).include?("KR")
+          def korean_series?(item)
+            KoreanSeries.include?(item)
           end
 
           def korean_person(person)
-            known_for = Array(person["known_for"]).select { |title| korean_title?(title) }
+            known_for = Array(person["known_for"]).select { |title| korean_series?(title) }
             person.merge("known_for" => known_for) if known_for.any?
           end
 
-          def origin_countries(item)
-            Array(item["origin_country"] || item["origin_countries"]) |
-              Array(item["production_countries"]).filter_map { |country| country["iso_3166_1"] }
-          end
         end
       end
     end

@@ -26,6 +26,7 @@ module ExternalContent
               include_adult: false,
               sort_by: SORT.fetch(filters[:sort] || "popularity").fetch(type),
               with_origin_country: filters[:origin_country],
+              without_genres: KoreanSeries::EXCLUDED_GENRE_IDS.join(","),
               with_genres: filters[:genre_id],
               "vote_average.gte": filters[:min_rating],
               with_watch_providers: filters[:provider_id],

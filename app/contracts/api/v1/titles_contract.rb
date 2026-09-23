@@ -5,7 +5,7 @@ require "dry/validation"
 module Api
   module V1
     class TitlesContract < Dry::Validation::Contract
-      MEDIA_TYPES = %w[tv movie all].freeze
+      MEDIA_TYPES = %w[tv].freeze
       STATUSES = %w[returning planned in_production ended cancelled].freeze
       SORTS = %w[popularity rating release_date].freeze
       MONETIZATION_TYPES = %w[flatrate free ads rent buy].freeze

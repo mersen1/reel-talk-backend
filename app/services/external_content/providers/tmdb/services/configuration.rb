@@ -6,7 +6,7 @@ module ExternalContent
       module Services
         class Configuration
           SORT_OPTIONS = %w[popularity rating release_date].freeze
-          MEDIA_TYPES = %w[tv movie all].freeze
+          MEDIA_TYPES = %w[tv].freeze
           MONETIZATION_TYPES = %w[flatrate free ads rent buy].freeze
 
           def initialize(client:, provider_collection:)
@@ -29,7 +29,7 @@ module ExternalContent
 
           def genres(language)
             {
-              movie: @client.call("genre/movie/list", language:)["genres"] || [],
+              movie: [],
               tv: @client.call("genre/tv/list", language:)["genres"] || []
             }
           end
@@ -41,9 +41,8 @@ module ExternalContent
           end
 
           def providers(language, region)
-            movie = @client.call("watch/providers/movie", language:, watch_region: region)["results"]
             tv = @client.call("watch/providers/tv", language:, watch_region: region)["results"]
-            @provider_collection.call(movie, tv)
+            @provider_collection.call([], tv)
           end
         end
       end

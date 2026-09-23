@@ -12,7 +12,7 @@ module Api
         required(:region).filled(:string)
       end
 
-      rule(:media_type) { key.failure("must be tv or movie") unless %w[tv movie].include?(value) }
+      rule(:media_type) { key.failure("must be tv") unless value == "tv" }
     end
   end
 end

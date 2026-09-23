@@ -44,7 +44,7 @@ RSpec.describe "API v1" do
 
     get "/api/v1/titles"
 
-    expect(provider).to have_received(:titles).with(hash_including(origin_country: "KR"))
+    expect(provider).to have_received(:titles).with(hash_including(media_type: "tv", origin_country: "KR"))
   end
 
   it "searches titles and people" do
@@ -125,7 +125,7 @@ RSpec.describe "API v1" do
     get "/api/v1/titles/game/1"
 
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.parsed_body.dig("error", "message")).to eq("media_type must be tv or movie")
+    expect(response.parsed_body.dig("error", "message")).to eq("media_type must be tv")
   end
 
   it "does not expose provider internals on an outage" do
@@ -133,7 +133,7 @@ RSpec.describe "API v1" do
       ExternalContent::Unavailable.new(status: :service_unavailable)
     )
 
-    get "/api/v1/titles/movie/1"
+    get "/api/v1/titles/tv/1"
 
     expect(response).to have_http_status(:service_unavailable)
     expect(response.parsed_body.dig("error", "code")).to eq("provider_unavailable")

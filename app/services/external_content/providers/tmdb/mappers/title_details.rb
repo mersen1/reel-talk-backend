@@ -28,14 +28,20 @@ module ExternalContent
               genres: genres(item),
               cast: cast(item),
               trailer: @trailer.call(item.dig("videos", "results")),
-              similar: @title_collection.call(item.dig("similar", "results"), media_type:),
-              recommendations: @title_collection.call(item.dig("recommendations", "results"), media_type:),
+              similar: korean_series(item.dig("similar", "results"), media_type),
+              recommendations: korean_series(item.dig("recommendations", "results"), media_type),
               watch_providers: @watch_providers.call(providers),
               watch_providers_url: providers["link"]
             )
           end
 
           private
+
+          def korean_series(items, media_type)
+            return [] unless media_type == "tv"
+
+            @title_collection.call(Array(items).select { |title| KoreanSeries.include?(title, media_type: "tv") }, media_type: "tv")
+          end
 
           def countries(item, media_type)
             return Array(item["origin_country"]) if media_type == "tv"

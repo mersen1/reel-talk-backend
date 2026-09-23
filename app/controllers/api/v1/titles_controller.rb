@@ -6,8 +6,9 @@ module Api
       include RequestParameters
 
       def index
-        defaults = request_defaults.merge(media_type: "all", origin_country: "KR", sort: "popularity")
-        render json: external_content.titles(**validated_params(TitlesContract, defaults: defaults))
+        defaults = request_defaults.merge(media_type: "tv", origin_country: "KR", sort: "popularity")
+        filters = validated_params(TitlesContract, defaults: defaults).merge(origin_country: "KR")
+        render json: external_content.titles(**filters)
       end
 
       def show

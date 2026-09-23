@@ -11,7 +11,10 @@ module ExternalContent
           end
 
           def call(item)
-            filmography = @title_collection.call(item.dig("combined_credits", "cast"))
+            series = Array(item.dig("combined_credits", "cast")).select do |credit|
+              KoreanSeries.include?(credit)
+            end
+            filmography = @title_collection.call(series)
               .sort_by { |credit| credit[:release_date].to_s }.reverse
             {
               id: item["id"],
@@ -24,7 +27,7 @@ module ExternalContent
               profile_url: @image_url.call(item["profile_path"], "h632"),
               popularity: item["popularity"],
               tv: filmography.select { |credit| credit[:media_type] == "tv" },
-              movies: filmography.select { |credit| credit[:media_type] == "movie" },
+              movies: [],
               filmography:
             }
           end

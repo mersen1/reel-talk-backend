@@ -16,7 +16,7 @@ RSpec.describe ExternalContent::Providers::Tmdb::Services::Search do
     )
   end
 
-  it "returns only Korean titles and people known for Korean works" do
+  it "returns only Korean series and people known for Korean series" do
     allow(client).to receive(:call).and_return(
       "page" => 1,
       "total_pages" => 1,
@@ -52,7 +52,7 @@ RSpec.describe ExternalContent::Providers::Tmdb::Services::Search do
 
     result = service.call(query: "film", page: 1, language: "ru-RU", include_adult: false)
 
-    expect(result[:titles].pluck(:id)).to eq([1, 2])
+    expect(result[:titles].pluck(:id)).to eq([1])
     expect(result[:people].pluck(:id)).to eq([4])
     expect(result.dig(:people, 0, :known_for).pluck(:id)).to eq([11])
   end

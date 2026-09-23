@@ -17,7 +17,9 @@ module ExternalContent
 
           def titles(responses, sort)
             items = responses.flat_map do |type, response|
-              Array(response["results"]).map { |raw| [@title_mapper.call(raw, media_type: type), raw] }
+              Array(response["results"]).filter_map do |raw|
+                [@title_mapper.call(raw, media_type: type), raw] if KoreanSeries.include?(raw, media_type: type)
+              end
             end
             items = sorted(items, sort) unless responses.one?
             items.map(&:first)
