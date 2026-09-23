@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe "Guest interactions" do
@@ -62,6 +64,17 @@ RSpec.describe "Guest interactions" do
     expect(response.parsed_body.fetch("entries").first.fetch("watched_episodes")).to eq(["1:1", "1:3", "2:1"])
     get "/api/v1/library", headers: headers(bob)
     expect(response.parsed_body.fetch("entries")).to be_empty
+  end
+
+  it "stores episode watch dates for yearly stats" do
+    watched_at = 1_790_144_000_000
+    put "/api/v1/library/tv/123", headers: headers(alice), params: {
+      watched_episodes: ["1:1"], episode_watched_at: { "1:1" => watched_at }
+    }, as: :json
+    expect(response).to have_http_status(:ok), response.body
+
+    get "/api/v1/library", headers: headers(alice)
+    expect(response.parsed_body.fetch("entries").first.fetch("episode_watched_at")).to eq("1:1" => watched_at)
   end
 
   it "keeps episode ratings and discussions separate by episode" do

@@ -11,6 +11,13 @@ Rails.application.routes.draw do
       get "people/:id", to: "people#show"
       get "configuration", to: "configuration#show"
       get "library", to: "library#index"
+      get "custom_lists", to: "custom_lists#index"
+      post "custom_lists", to: "custom_lists#create"
+      get "shared_lists/:token", to: "custom_lists#shared"
+      put "custom_lists/:id", to: "custom_lists#update"
+      delete "custom_lists/:id", to: "custom_lists#destroy"
+      post "custom_lists/:id/items/:media_type/:title_id", to: "custom_lists#add_item"
+      delete "custom_lists/:id/items/:media_type/:title_id", to: "custom_lists#remove_item"
       get "guest", to: "guests#show"
       get "recent_views", to: "recent_views#index"
       put "recent_views/:media_type/:id", to: "recent_views#update"
@@ -23,6 +30,8 @@ Rails.application.routes.draw do
       put "comments/:id/like", to: "comments#like"
     end
   end
+
+  get "lists/:token", to: "public_lists#show"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

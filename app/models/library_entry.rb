@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class LibraryEntry < ApplicationRecord
   validates :device_id, presence: true
   validates :media_type, inclusion: { in: %w[tv movie] }
@@ -7,6 +9,7 @@ class LibraryEntry < ApplicationRecord
   validates :personal_note, length: { maximum: 5000 }
   validate :valid_watched_episodes
   validate :valid_episode_ratings
+  validate :valid_episode_watched_at
 
   private
 
@@ -23,5 +26,12 @@ class LibraryEntry < ApplicationRecord
       episode_ratings.all? { |key, rating| key.match?(/\A[1-9]\d*:[1-9]\d*\z/) && rating.is_a?(Integer) && rating.between?(1, 10) }
 
     errors.add(:episode_ratings, "must map season:episode identifiers to ratings from 1 to 10")
+  end
+
+  def valid_episode_watched_at
+    return if episode_watched_at.is_a?(Hash) && episode_watched_at.length <= 1000 &&
+      episode_watched_at.all? { |key, value| key.match?(/\A[1-9]\d*:[1-9]\d*\z/) && value.is_a?(Integer) && value.positive? }
+
+    errors.add(:episode_watched_at, "must map season:episode identifiers to timestamps")
   end
 end

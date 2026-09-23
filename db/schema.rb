@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_200300) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -39,6 +39,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_200300) do
     t.index ["parent_id"], name: "index_comments_on_parent_id"
   end
 
+  create_table "custom_list_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "custom_list_id", null: false
+    t.string "media_type", null: false
+    t.integer "position", null: false
+    t.bigint "title_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_list_id", "media_type", "title_id"], name: "index_custom_list_items_on_list_and_title", unique: true
+    t.index ["custom_list_id"], name: "index_custom_list_items_on_custom_list_id"
+  end
+
+  create_table "custom_lists", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "device_id", null: false
+    t.string "name", null: false
+    t.string "share_token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["device_id"], name: "index_custom_lists_on_device_id"
+    t.index ["share_token"], name: "index_custom_lists_on_share_token", unique: true
+  end
+
   create_table "guest_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "device_id", null: false
@@ -51,6 +72,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_200300) do
     t.datetime "created_at", null: false
     t.string "device_id", null: false
     t.jsonb "episode_ratings", default: {}, null: false
+    t.jsonb "episode_watched_at", default: {}, null: false
     t.boolean "favorite", default: false, null: false
     t.string "media_type", null: false
     t.text "personal_note", default: "", null: false
@@ -73,4 +95,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_200300) do
 
   add_foreign_key "comment_likes", "comments"
   add_foreign_key "comments", "comments", column: "parent_id"
+  add_foreign_key "custom_list_items", "custom_lists"
 end
