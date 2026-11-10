@@ -41,7 +41,7 @@ gem "json", "~> 2.13"
 # gem "rack-cors"
 
 group :development, :test do
-  gem "rspec-rails", "~> 8.0"
+  gem "rspec-rails", "~> 8.1"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
 
